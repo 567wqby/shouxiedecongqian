@@ -94,12 +94,32 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
 /* ===== 登录层：全屏沉浸式天气小剧场 ===== */
 .gate{position:fixed;inset:0;z-index:200;overflow:hidden;
   background:#0a0f15 url('login-bg.jpg') center 74%/cover no-repeat}
+
+/* ===== 登录背景：周杰伦 / 孙燕姿 / 陈奕迅 写真轮播（每 5 秒换一次） ===== */
+.gate-bg{position:absolute;inset:0;z-index:1;overflow:hidden;background:#080c12}
+.bg-layer{position:absolute;inset:0;background-size:cover;background-position:center 24%;background-repeat:no-repeat;
+  opacity:0;filter:brightness(.96) saturate(1.02)}
+.bg-layer.on{opacity:1;animation:bgslow 9s ease-out forwards}
+@keyframes bgslow{from{transform:scale(1.005)}to{transform:scale(1.075)}}
+/* 节气彩蛋：鼠标划过时飘起的应景小物（饺子带热气等） */
+.wxt{position:absolute;z-index:6;pointer-events:none;transform:translate(-50%,-50%);font-size:36px;line-height:1;
+  animation:wxtFly 2.3s cubic-bezier(.2,.6,.35,1) forwards;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.62)) drop-shadow(0 0 18px rgba(255,190,90,.35))}
+.wxt .steam{position:absolute;left:50%;bottom:74%;width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,.92);filter:blur(3px);animation:wxtSteam 1.8s ease-out forwards}
+.wxt .steam.s2{left:24%;animation-delay:.2s}
+.wxt .steam.s3{left:76%;animation-delay:.4s}
+@keyframes wxtFly{0%{transform:translate(-50%,-40%) scale(.66)}
+  22%{transform:translate(-50%,-62%) scale(1)}
+  100%{transform:translate(-50%,-168%) scale(.96)}}
+@keyframes wxtSteam{0%{transform:translate(-50%,0) scale(.7);opacity:.9}
+  100%{transform:translate(-260%,-34px) scale(2);opacity:0}}
 .gate::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;transition:background .8s;
-  background:linear-gradient(180deg,rgba(8,12,18,.92),rgba(8,12,18,.5) 40%,rgba(8,12,18,.72))}
-.gate[data-wx="sun"]::before{background:linear-gradient(180deg,rgba(64,44,14,.68),rgba(36,24,10,.34) 46%,rgba(20,13,6,.58))}
-.gate[data-wx="cloudy"]::before{background:linear-gradient(180deg,rgba(16,18,22,.88),rgba(20,22,26,.56) 45%,rgba(14,16,20,.7))}
-.gate[data-wx="rain"]::before{background:linear-gradient(180deg,rgba(4,10,18,.94),rgba(7,13,22,.7) 45%,rgba(5,10,18,.82))}
-.gate[data-wx="snow"]::before{background:linear-gradient(180deg,rgba(10,16,26,.88),rgba(18,24,34,.62) 45%,rgba(12,18,28,.74))}
+  background:linear-gradient(180deg,rgba(8,12,18,.52),rgba(8,12,18,.16) 42%,rgba(8,12,18,.56))}
+.gate[data-wx="sun"]::before{background:linear-gradient(180deg,rgba(46,32,10,.42),rgba(36,24,10,.12) 46%,rgba(20,13,6,.46))}
+.gate[data-wx="cloudy"]::before{background:linear-gradient(180deg,rgba(16,18,22,.56),rgba(20,22,26,.22) 45%,rgba(14,16,20,.52))}
+.gate[data-wx="rain"]::before{background:linear-gradient(180deg,rgba(4,10,18,.66),rgba(7,13,22,.34) 45%,rgba(5,10,18,.6))}
+.gate[data-wx="snow"]::before{background:linear-gradient(180deg,rgba(10,16,26,.56),rgba(18,24,34,.24) 45%,rgba(12,18,28,.52))}
 #wxc{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:3;pointer-events:none}
 .wx-scene{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
 .wx-scene > *{display:none}
@@ -197,6 +217,10 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
 </head>
 <body>
 <div class="gate" id="gate" data-wx="cloudy">
+  <div class="gate-bg" aria-hidden="true">
+    <div class="bg-layer" id="bgA"></div>
+    <div class="bg-layer" id="bgB"></div>
+  </div>
   <canvas id="wxc"></canvas>
   <div class="wx-scene" aria-hidden="true">
     <!-- 晴 -->
@@ -346,6 +370,7 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
     </div>
   </div>
   <div class="wx-ui">
+    <div class="wx-badge" id="wxSeason" style="display:none"></div>
     <div class="wx-badge" id="wxBadge">天气识别中…</div>
     <div class="wx-switch" id="wxSwitch">
       <button data-wxmode="auto" class="on">自动</button>
@@ -2510,13 +2535,77 @@ async function changePassword(){
 /* ============ 登录页：按当天天气自动切换的沉浸式场景 ============ */
 const WX_KEY='handwrite.wx.v1';
 const WX_LABEL={sun:'晴天',cloudy:'阴天',rain:'雨天',snow:'雪天'};
-/* 天气 → 周杰伦歌词（由网站自动配对） */
-const WX_LYRIC={
- sun:'但故事的最后，你还是说了拜拜～|《晴天》 周杰伦',
- rain:'最美的不是下雨天，是曾与你躲过雨的屋檐|《不能说的秘密》 周杰伦',
- cloudy:'天青色等烟雨，而我在等你|《青花瓷》 周杰伦',
- snow:'你发如雪，纷飞了离别|《发如雪》 周杰伦'
+
+/* ===== 登录背景：三位歌手的写真 + 与艺人/天气对应的歌词（每 5 秒轮换） ===== */
+const BG_ARTISTS={
+  jay:{name:'周杰伦',imgs:['bg/jay1.jpg','bg/jay2.jpg','bg/jay3.jpg','bg/jay4.jpg']},
+  yanzi:{name:'孙燕姿',imgs:['bg/yanzi1.jpg','bg/yanzi2.jpg','bg/yanzi3.jpg','bg/yanzi4.jpg']},
+  eason:{name:'陈奕迅',imgs:['bg/eason1.jpg','bg/eason2.jpg']}
 };
+/* 背景是哪位歌手，就只显示他自己的歌；歌词再按当天天气挑 */
+const BG_LYRIC={
+  jay:{
+    sun:[{q:'故事的最后，你还是说了拜拜',s:'《晴天》'},{q:'回家吧，回到最初的美好',s:'《稻香》'}],
+    cloudy:[{q:'天青色等烟雨，而我在等你',s:'《青花瓷》'},{q:'菊花残，满地伤，你的笑容已泛黄',s:'《菊花台》'}],
+    rain:[{q:'最美的不是下雨天，是曾与你躲过雨的屋檐',s:'《不能说的秘密》'},{q:'雨下整夜，我的爱溢出就像雨水',s:'《七里香》'}],
+    snow:[{q:'你发如雪，纷飞了离别',s:'《发如雪》'},{q:'我送你离开，千里之外',s:'《千里之外》'}]
+  },
+  yanzi:{
+    sun:[{q:'期待着一个幸运和一个冲击，多么奇妙的际遇',s:'《绿光》'},{q:'我遇见谁，会有怎样的对白',s:'《遇见》'}],
+    cloudy:[{q:'我遇见谁，会有怎样的对白，我等的人他在多远的未来',s:'《遇见》'},{q:'我怀念的是无话不说，我怀念的是一起做梦',s:'《我怀念的》'}],
+    rain:[{q:'天黑黑，欲落雨',s:'《天黑黑》'},{q:'我怀念的是无话不说，我怀念的是一起做梦',s:'《我怀念的》'}],
+    snow:[{q:'我怀念的是无话不说，我怀念的是一起做梦',s:'《我怀念的》'},{q:'我遇见谁，会有怎样的对白',s:'《遇见》'}]
+  },
+  eason:{
+    sun:[{q:'天气不似预期，但要走，总要飞',s:'《岁月如歌》'},{q:'我来到你的城市，走过你来时的路',s:'《好久不见》'}],
+    cloudy:[{q:'徘徊过多少橱窗，住过多少旅馆',s:'《爱情转移》'},{q:'十年之前，我不认识你，你不属于我',s:'《十年》'}],
+    rain:[{q:'天气不似预期，但要走，总要飞',s:'《岁月如歌》'},{q:'我来到你的城市，走过你来时的路',s:'《好久不见》'}],
+    snow:[{q:'徘徊过多少橱窗，住过多少旅馆',s:'《爱情转移》'},{q:'十年之前，我不认识你，你不属于我',s:'《十年》'}]
+  }
+};
+const BG={artist:'',img:'',front:'bgA',timer:0,lastQ:'',ready:false};
+
+function bgPicked(){
+  const keys=Object.keys(BG_ARTISTS);
+  let k=keys[Math.floor(Math.random()*keys.length)];
+  if(keys.length>1 && k===BG.artist) k=keys[(keys.indexOf(k)+1+Math.floor(Math.random()*(keys.length-1)))%keys.length];
+  const arr=BG_ARTISTS[k].imgs, img=arr[Math.floor(Math.random()*arr.length)];
+  return {k,img};
+}
+function bgShow(){
+  const p=bgPicked(), A=BG_ARTISTS[p.k];
+  BG.artist=p.k; BG.img=p.img;
+  const nx=$('#'+(BG.front==='bgA'?'bgB':'bgA')), cur=$('#'+BG.front);
+  if(nx){
+    nx.style.backgroundImage="url('"+p.img+"')";
+    nx.classList.add('on'); nx.style.opacity='1';
+    if(cur){ cur.classList.remove('on'); cur.style.opacity='0' }
+    BG.front=(BG.front==='bgA'?'bgB':'bgA');
+  }
+  bgRefreshLyric();
+}
+function bgRefreshLyric(){
+  const a=BG_ARTISTS[BG.artist]?BG.artist:'jay';
+  const pool=(BG_LYRIC[a]||BG_LYRIC.jay)[WX.mode]||BG_LYRIC[a].cloudy;
+  let pick=pool[0];
+  if(pool.length>1){
+    const cand=pool.filter(x=>x.q!==BG.lastQ);
+    pick=cand[Math.floor(Math.random()*cand.length)]||pool[0];
+  }
+  BG.lastQ=pick.q;
+  const lq=$('#wxl'), ls=$('#wxs'), box=$('#wxLyric');
+  if(lq) lq.textContent='「'+pick.q+'」';
+  if(ls) ls.textContent=pick.s+' '+BG_ARTISTS[a].name+' · 今天'+WX_LABEL[WX.mode];
+  if(box){ box.classList.remove('in'); void box.offsetWidth; box.classList.add('in') }
+}
+function bgStart(){
+  if(BG.ready) return; BG.ready=true;
+  Object.keys(BG_ARTISTS).forEach(k=>BG_ARTISTS[k].imgs.forEach(u=>{ const i=new Image(); i.src=u }));
+  bgShow();
+  clearInterval(BG.timer);
+  BG.timer=setInterval(()=>{ if(!$('#gate').classList.contains('hidden')) bgShow() },5000);
+}
+
 const WX={mode:'cloudy',pref:'auto',run:false,raf:0,last:0,cv:null,ctx:null,W:0,H:0,ground:0,
   parts:[],ripples:[],splashes:[],inited:false,dpr:1};
 
@@ -2535,11 +2624,7 @@ function wxSetMode(mode,o){
   WX.mode=mode;
   const g=$('#gate'); if(!g) return;
   g.dataset.wx=mode;
-  const lyr=(WX_LYRIC[mode]||WX_LYRIC.cloudy).split('|');
-  const lq=$('#wxl'), ls=$('#wxs'), box=$('#wxLyric');
-  if(lq) lq.textContent='「'+lyr[0]+'」';
-  if(ls) ls.textContent=lyr[1]||'';
-  if(box){ box.classList.remove('in'); void box.offsetWidth; box.classList.add('in') }
+  bgRefreshLyric();
   $$('#wxSwitch button').forEach(b=>b.classList.toggle('on',WX.pref==='auto'?(!b.dataset.wxmode||b.dataset.wxmode==='auto'):(b.dataset.wxmode===WX.pref)));
   let txt;
   if(o.manual) txt='手动切换 · '+WX_LABEL[mode];
@@ -2656,6 +2741,118 @@ function wxStop(){
   const c=WX.ctx, cv=WX.cv;
   if(c&&cv) c.clearRect(0,0,WX.W,WX.H);
 }
+/* ===== 中国二十四节气 / 传统节日彩蛋（只在中国日子出现，鼠标划过冒出应景小物） ===== */
+const TERM_NAMES=['小寒','大寒','立春','雨水','惊蛰','春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪','冬至'];
+const TERM_MS=[0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758];
+const TERM_FX={
+  '小寒':{e:'🔥',h:'小寒 · 围炉取暖'},'大寒':{e:'❄️',h:'大寒 · 一年最冷时'},
+  '立春':{e:'🌱',h:'立春 · 春气动了'},'雨水':{e:'💧',h:'雨水 · 润物无声'},
+  '惊蛰':{e:'🐦',h:'惊蛰 · 蛰虫惊起'},'春分':{e:'🕊️',h:'春分 · 昼夜平分'},
+  '清明':{e:'🌿',h:'清明 · 雨纷纷'},'谷雨':{e:'🌾',h:'谷雨 · 百谷生长'},
+  '立夏':{e:'🍃',h:'立夏 · 风开始热'},'小满':{e:'🌾',h:'小满 · 麦子将黄'},
+  '芒种':{e:'🌾',h:'芒种 · 忙着下种'},'夏至':{e:'🍉',h:'夏至 · 西瓜正甜'},
+  '小暑':{e:'🍧',h:'小暑 · 冰碗解暑'},'大暑':{e:'🍉',h:'大暑 · 蝉声正盛'},
+  '立秋':{e:'🍂',h:'立秋 · 一叶知秋'},'处暑':{e:'🌤️',h:'处暑 · 暑气收了'},
+  '白露':{e:'💧',h:'白露 · 露水微凉'},'秋分':{e:'🌾',h:'秋分 · 稻熟桂香'},
+  '寒露':{e:'🍁',h:'寒露 · 枫叶红了'},'霜降':{e:'🍁',h:'霜降 · 霜色满地'},
+  '立冬':{e:'🥟',h:'立冬 · 吃碗热饺子'},'小雪':{e:'❄️',h:'小雪 · 初雪在路上'},
+  '大雪':{e:'❄️',h:'大雪 · 围炉煮茶'},'冬至':{e:'🥟',h:'冬至 · 热气腾腾的饺子'}
+};
+const FESTIVALS=[
+  {l:[1,1],e:'🏮',h:'春节 · 灯笼高挂',tag:'春节'},
+  {l:[1,15],e:'🍡',h:'元宵节 · 花灯如昼，来碗汤圆',tag:'元宵'},
+  {l:[5,5],e:'🍙',h:'端午节 · 粽叶飘香',tag:'端午'},
+  {l:[7,7],e:'🌙',h:'七夕 · 银河相望',tag:'七夕'},
+  {l:[8,15],e:'🥮',h:'中秋节 · 月圆人团圆',tag:'中秋'},
+  {l:[9,9],e:'🌼',h:'重阳节 · 登高赏菊',tag:'重阳'},
+  {l:[12,8],e:'🥣',h:'腊八 · 一碗热粥',tag:'腊八'}
+];
+const SEASON={on:null,e:'✨',h:''};
+
+function sameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate() }
+function solarTermDay(y,n){
+  const t=new Date(31556925974.7*(y-1900)+TERM_MS[n]*60000+Date.UTC(1900,0,6,2,5));
+  return new Date(t.getUTCFullYear(),t.getUTCMonth(),t.getUTCDate());
+}
+function cnNum(v){
+  if(!v) return NaN;
+  const z='正一二三四五六七八九十'.split('');
+  if(/^\d+$/.test(v)) return parseInt(v,10);
+  v=v.replace(/月|日/g,'');
+  if(v==='十一') return 11; if(v==='十二') return 12;
+  if(v.length===2&&v[0]==='十') return 10+z.indexOf(v[1]);
+  if(v.length===2&&v[1]==='十') return z.indexOf(v[0])*10;
+  return z.indexOf(v);
+}
+function lunarMD(d){
+  try{
+    const p=new Intl.DateTimeFormat('zh-CN-u-ca-chinese',{month:'numeric',day:'numeric'}).formatToParts(d);
+    const m=p.find(x=>x.type==='month'), dd=p.find(x=>x.type==='day');
+    return {m:cnNum(m&&m.value),d:cnNum(dd&&dd.value)};
+  }catch(e){ return {m:0,d:0} }
+}
+function seasonFind(){
+  try{
+    const fx=new URLSearchParams(location.search).get('fx');
+    if(fx){ const f=TERM_FX[fx]||{e:'✨',h:fx}; return {on:fx,e:f.e,h:f.h} }
+  }catch(e){}
+  const now=new Date(), y=now.getFullYear();
+  for(let i=0;i<24;i++){
+    if(sameDay(solarTermDay(y,i),now)){ const n=TERM_NAMES[i],fx=TERM_FX[n]||{e:'🌿',h:n}; return {on:n,e:fx.e,h:fx.h} }
+  }
+  const lm=lunarMD(now), nx=lunarMD(new Date(now.getTime()+86400000));
+  for(const f of FESTIVALS){
+    if(lm.m===f.l[0]&&lm.d===f.l[1]) return {on:f.tag,e:f.e,h:f.h}
+  }
+  if(lm.m===12&&nx.m===1&&nx.d===1) return {on:'除夕',e:'🧨',h:'除夕 · 爆竹声中一岁除'};
+  return null;
+}
+function seasonSpawn(x,y,big){
+  const g=$('#gate'); if(!g||!SEASON.on) return;
+  const s=document.createElement('span');
+  s.className='wxt';
+  s.style.left=x+'px'; s.style.top=y+'px';
+  s.style.fontSize=(big?34:24+Math.random()*8)+'px';
+  s.textContent=SEASON.e;
+  if(/饺子|汤圆|粥|粽|包子/.test(SEASON.h)||SEASON.e==='🥟'){
+    for(let i=0;i<3;i++){ const st=document.createElement('div'); st.className='steam'+(i?' s'+(i+1):''); s.appendChild(st) }
+  }
+  g.appendChild(s);
+  setTimeout(()=>s.remove(),2500);
+}
+function seasonBurst(x,y,n){
+  for(let i=0;i<n;i++){
+    const dx=(Math.random()-.5)*70, dy=(Math.random()-.5)*54;
+    setTimeout(()=>seasonSpawn(x+dx,y+dy,false),i*70);
+  }
+}
+function seasonInit(){
+  const s=seasonFind();
+  const badge=$('#wxSeason');
+  if(!s){ SEASON.on=null; if(badge) badge.style.display='none'; return }
+  SEASON.on=s.on; SEASON.e=s.e; SEASON.h=s.h;
+  if(badge){ badge.style.display='inline-block'; badge.textContent=s.h+' · 鼠标划一划' }
+  const g=$('#gate'); if(!g||g.dataset.fxOn) return;
+  g.dataset.fxOn='1';
+  let lock=0;
+  g.addEventListener('mousemove',e=>{
+    if(!SEASON.on||$('#gate').classList.contains('hidden'))return;
+    const t=Date.now(); if(t-lock<140) return; lock=t;
+    seasonSpawn(e.clientX,e.clientY,false);
+  });
+  g.addEventListener('click',e=>{
+    if(!SEASON.on||$('#gate').classList.contains('hidden'))return;
+    if(e.target.closest('.gate-card')) return;
+    seasonBurst(e.clientX,e.clientY,5);
+  });
+  /* 节气当天一进来先冒一小把，提示有这个彩蛋 */
+  setTimeout(()=>{
+    if(!SEASON.on)return;
+    seasonBurst(innerWidth*0.5,innerHeight*0.52,3);
+    setTimeout(()=>seasonBurst(innerWidth*0.28,innerHeight*0.4,3),900);
+  },1600);
+}
+
 function wxInit(){
   if(WX.inited) return; WX.inited=true;
   const house=$('#wxHouse');
@@ -2668,6 +2865,7 @@ function wxInit(){
     if(m==='auto') wxFetchWeather(); else wxSetMode(m,{manual:true});
   });
   try{ WX.pref=localStorage.getItem(WX_KEY)||'auto' }catch(e){ WX.pref='auto' }
+  try{ const q=new URLSearchParams(location.search).get('wx'); if(q&&WX_LABEL[q]) WX.pref=q }catch(e){}
   if(!WX_LABEL[WX.pref]) WX.pref='auto';
   wxStart();
   if(WX.pref==='auto') wxFetchWeather(); else wxSetMode(WX.pref,{manual:true});
@@ -2676,6 +2874,8 @@ function wxInit(){
 }
 function wxEnter(){
   wxInit();
+  bgStart();
+  seasonInit();
   if(!WX.run) wxStart();
   if(WX.pref==='auto') wxFetchWeather(); else wxSetMode(WX.pref,{manual:true});
 }
