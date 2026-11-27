@@ -182,36 +182,35 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
 .wx-switch{display:flex;gap:2px;background:rgba(10,16,24,.48);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:3px;backdrop-filter:blur(8px)}
 .wx-switch button{background:transparent;border:none;color:#c9d4de;font-size:12px;padding:4px 10px;border-radius:16px;cursor:pointer}
 .wx-switch button.on{background:rgba(255,255,255,.92);color:#17222c;font-weight:600}
-/* 登录卡：半透明玻璃，跟背景长在一起 */
-.gate-card{position:relative;z-index:9;width:348px;padding:30px 28px 22px;pointer-events:auto;
-  border-radius:22px;border:1px solid rgba(255,255,255,.18);
-  background:linear-gradient(165deg,rgba(16,19,25,.62),rgba(8,11,16,.44) 70%);
-  backdrop-filter:blur(26px) saturate(1.1);-webkit-backdrop-filter:blur(26px) saturate(1.1);
-  box-shadow:0 26px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -40px 70px rgba(0,0,0,.18);
-  color:#eaf1f7}
-.gate-card::after{content:'';position:absolute;left:28px;right:28px;top:0;height:1px;
-  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.5),rgba(255,255,255,0));opacity:.55}
+/* 登录卡：完全透明，直接站在照片上 */
+.gate-card{position:relative;z-index:9;width:340px;padding:26px 2px 18px;pointer-events:auto;
+  background:none;border:none;box-shadow:none;color:#f3f8fb}
+/* 一层看不见的暗色晕影，只为了白底照片上字能看清，不形成方块边界 */
+.gate-card::before{content:'';position:absolute;inset:-34px -56px;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(3,6,10,.62),rgba(3,6,10,.42) 55%,rgba(3,6,10,0) 80%)}
 @media (max-width:760px){
   .wx-house{right:4vw;bottom:6vh;width:150px}
   .wx-kids{width:200px;left:2vw}
   .wx-lyric .q{font-size:14px}
-  .gate-card{width:min(90vw,348px);padding:24px 20px 18px}
+  .gate-card{width:min(88vw,340px)}
 }
-.gate-brand{font-size:22px;font-weight:600;letter-spacing:6px;color:#f4f8fb;text-shadow:0 3px 22px rgba(0,0,0,.72)}
-.gate-brand small{display:block;font-size:10.5px;letter-spacing:2.4px;color:rgba(226,236,246,.7);font-weight:400;margin-top:7px}
-.gate-card input{width:100%;margin-top:12px;padding:11px 13px;border-radius:13px;
-  background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.2)!important;
-  color:#f2f7fb!important;font-size:14px;letter-spacing:.5px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);backdrop-filter:blur(8px);transition:.2s}
-.gate-card input::placeholder{color:rgba(226,236,246,.52);letter-spacing:1px}
-.gate-card input:focus{background:rgba(255,255,255,.12)!important;border-color:rgba(255,214,140,.62)!important;
-  box-shadow:0 0 0 3px rgba(255,206,120,.13),inset 0 1px 0 rgba(255,255,255,.2)!important}
-.gate-card .hint{color:rgba(226,236,246,.78);font-size:12px}
+.gate-brand{font-size:23px;font-weight:600;letter-spacing:7px;color:#fff;
+  text-shadow:0 4px 26px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.7),0 0 40px rgba(0,0,0,.35)}
+.gate-brand small{display:block;font-size:10.5px;letter-spacing:2.6px;color:rgba(238,246,252,.86);font-weight:400;margin-top:7px;
+  text-shadow:0 2px 12px rgba(0,0,0,.85)}
+.gate-card input{width:100%;margin-top:12px;padding:11px 13px;border-radius:12px;
+  background:rgba(8,12,18,.26)!important;border:1px solid rgba(255,255,255,.34)!important;
+  color:#f7fbff!important;font-size:14px;letter-spacing:.5px;
+  box-shadow:0 10px 26px rgba(0,0,0,.22);backdrop-filter:blur(6px);transition:.18s}
+.gate-card input::placeholder{color:rgba(232,240,248,.68);letter-spacing:1px}
+.gate-card input:focus{background:rgba(8,12,18,.34)!important;border-color:rgba(255,214,140,.78)!important;
+  box-shadow:0 0 0 3px rgba(255,206,120,.16),0 10px 26px rgba(0,0,0,.24)!important}
+.gate-card .hint{color:#eef4f9;font-size:12px;text-shadow:0 2px 10px rgba(0,0,0,.8)}
 .gate-card .hint input[type=checkbox]{accent-color:#e5b26a}
-.gate-err{color:#ffc2b8;font-size:12px;min-height:18px;margin-top:8px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
-.gate-card .primary{width:100%;margin-top:6px;padding:12px;border-radius:13px;border:none;letter-spacing:7px;font-size:14.5px;
-  background:linear-gradient(120deg,rgba(43,120,150,.94),rgba(22,66,96,.94));color:#f7fbfe;
-  box-shadow:0 14px 32px rgba(6,26,40,.5),inset 0 1px 0 rgba(255,255,255,.25);transition:.22s}
+.gate-err{color:#ffd2c8;font-size:12px;min-height:18px;margin-top:8px;text-shadow:0 2px 10px rgba(0,0,0,.85)}
+.gate-card .primary{width:100%;margin-top:6px;padding:12px;border-radius:12px;border:none;letter-spacing:7px;font-size:14.5px;
+  background:linear-gradient(120deg,rgba(43,120,150,.95),rgba(22,66,96,.95));color:#f7fbfe;
+  box-shadow:0 14px 34px rgba(3,14,22,.55),inset 0 1px 0 rgba(255,255,255,.25);transition:.22s}
 .gate-card .primary:hover{transform:translateY(-1px);background:linear-gradient(120deg,rgba(52,136,168,.98),rgba(26,78,112,.98))}
 .acct-bar{font-size:11px;color:#8fa6b6;margin-top:10px;padding:0 8px;display:flex;justify-content:space-between;align-items:center;gap:6px}
 .acct-bar button{background:transparent;border:none;color:#9fb6c6;font-size:11px;padding:2px 4px}
@@ -400,8 +399,10 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
   <div class="gate-inner">
   <div class="gate-card">
     <div class="gate-brand">手写的从前<small>文献管理与科研助手 · 旧时光里的文献库</small></div>
-    <input id="lu" placeholder="账号" autocomplete="username">
-    <input id="lp" type="password" placeholder="密码" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <input id="lu" placeholder="账号" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" readonly
+           onfocus="this.removeAttribute('readonly')" onpointerdown="this.removeAttribute('readonly')" aria-autocomplete="none">
+    <input id="lp" type="password" placeholder="密码" autocomplete="new-password" readonly
+           onfocus="this.removeAttribute('readonly')" onpointerdown="this.removeAttribute('readonly')" onkeydown="if(event.key==='Enter')doLogin()">
     
     <label class="hint" style="display:flex;gap:6px;align-items:center;margin-top:12px"><input type="checkbox" id="lm" style="width:auto;margin:0"> 本机记住我（30 天内自动登录）</label>
     <div class="gate-err" id="lerr"></div>
@@ -2641,30 +2642,58 @@ function wxSetMode(mode,o){
   bgRefreshLyric();
   $$('#wxSwitch button').forEach(b=>b.classList.toggle('on',WX.pref==='auto'?(!b.dataset.wxmode||b.dataset.wxmode==='auto'):(b.dataset.wxmode===WX.pref)));
   let txt;
+  const tp=(o.temp==null)?'':(String(o.temp).indexOf('~')>=0?(' '+o.temp+'°C'):(' '+o.temp+'°C'));
   if(o.manual) txt='手动切换 · '+WX_LABEL[mode];
-  else if(o.offline) txt='未联网 · 默认'+WX_LABEL[mode];
-  else if(o.temp!=null) txt='成都 '+o.temp+'°C · '+WX_LABEL[mode]+' · 自动识别';
+  else if(o.offline) txt='天气暂未获取 · 显示'+WX_LABEL[mode]+' · 点此重试';
+  else if(o.cached) txt='上次记录 · 成都'+tp+' · '+WX_LABEL[mode];
+  else if(o.temp!=null) txt='成都'+tp+' · '+WX_LABEL[mode]+' · 自动识别';
   else txt='成都 · '+WX_LABEL[mode];
-  const badge=$('#wxBadge'); if(badge) badge.textContent=txt;
+  const badge=$('#wxBadge'); if(badge){ badge.textContent=txt; badge.title='点击重新读取天气'; badge.style.cursor='pointer' }
   WX.ripples=[]; WX.splashes=[];
   wxSpawn();
 }
+const WX_CACHE_KEY='handwrite.wx.cache2';
+
+function wxFromText(t){
+  t=String(t||'');
+  if(/雪/.test(t)) return 'snow';
+  if(/雨|雷/.test(t)) return 'rain';
+  if(/晴/.test(t) && !/云/.test(t)) return 'sun';
+  if(/多云|晴间|云/.test(t)) return 'cloudy';
+  if(/阴|雾|霾/.test(t)) return 'cloudy';
+  return '';
+}
+/* 多源天气：先国内接口（快），再 open-meteo（准），都失败就看上次记录 */
+const WX_SRC=[
+  {name:'apihz',url:'https://cn.apihz.cn/api/tianqi/tqyb.php?id=88888888&key=88888888&sheng=%E5%9B%9B%E5%B7%9D&place=%E6%88%90%E9%83%BD',to:6000,
+   parse:j=>{ const w=j&&(j.weather1||j.weather); const m=wxFromText(w); if(!m) throw new Error('bad'); const hi=parseInt(j.wd1||j.temperature,10), lo=parseInt(j.wd2,10);
+     return {mode:m,temp:isFinite(hi)&&isFinite(lo)?(lo+'~'+hi):(isFinite(hi)?String(hi):null)} }},
+  {name:'open-meteo',url:'https://api.open-meteo.com/v1/forecast?latitude=30.6595&longitude=104.0633&current=temperature_2m,weather_code&timezone=Asia%2FShanghai',to:11000,
+   parse:j=>{ const cur=(j&&j.current)||{}; const code=Number(cur.weather_code), t=Math.round(Number(cur.temperature_2m));
+     if(!isFinite(code)) throw new Error('no weather'); return {mode:wxFromCode(code),temp:isFinite(t)?String(t):null} }},
+  {name:'wttr',url:'https://wttr.in/Chengdu?format=j1',to:9000,
+   parse:j=>{ const c=((j||{}).current_condition||[])[0]||{}; const m=wxFromText(c.lang_zh&&c.lang_zh[0]&&c.lang_zh[0].value);
+     const code=Number(c.weatherCode); const mm=m||(isFinite(code)?wxFromCode(code):'');
+     if(!mm) throw new Error('no weather'); return {mode:mm,temp:c.temp_C?String(Math.round(Number(c.temp_C))):null} }}
+];
+
 async function wxFetchWeather(){
   const badge=$('#wxBadge'); if(badge) badge.textContent='正在读取成都的天气…';
   let cache=null;
-  try{ cache=JSON.parse(sessionStorage.getItem('handwrite.wx.cache')||'null') }catch(e){}
-  if(cache && Date.now()-cache.ts<30*60000){ wxSetMode(cache.mode,{temp:cache.temp}); return }
-  try{
-    const j=await fetchJSON('https://api.open-meteo.com/v1/forecast?latitude=30.6595&longitude=104.0633&current=temperature_2m,weather_code&timezone=Asia%2FShanghai',null,5000);
-    const cur=(j&&j.current)||{};
-    const code=Number(cur.weather_code), t=Math.round(Number(cur.temperature_2m));
-    if(!isFinite(code)) throw new Error('no weather');
-    const mode=wxFromCode(code);
-    try{ sessionStorage.setItem('handwrite.wx.cache',JSON.stringify({ts:Date.now(),mode,temp:t})) }catch(e){}
-    wxSetMode(mode,{temp:t});
-  }catch(e){
-    wxSetMode('cloudy',{offline:true});
+  try{ cache=JSON.parse(localStorage.getItem(WX_CACHE_KEY)||sessionStorage.getItem('handwrite.wx.cache')||'null') }catch(e){}
+  if(cache && cache.mode && Date.now()-cache.ts<20*60000){ wxSetMode(cache.mode,{temp:cache.temp}); return }
+  for(const s of WX_SRC){
+    try{
+      const j=await fetchJSON(s.url,null,s.to);
+      const r=s.parse(j);
+      const pack={ts:Date.now(),mode:r.mode,temp:r.temp};
+      try{ localStorage.setItem(WX_CACHE_KEY,JSON.stringify(pack)); sessionStorage.setItem('handwrite.wx.cache',JSON.stringify(pack)) }catch(e){}
+      wxSetMode(r.mode,{temp:r.temp});
+      return;
+    }catch(e){}
   }
+  if(cache && cache.mode){ wxSetMode(cache.mode,{cached:true,temp:cache.temp}); return }
+  wxSetMode('sun',{offline:true});
 }
 function wxSpawn(){
   WX.parts=[]; WX.ripples=[]; WX.splashes=[];
@@ -2871,6 +2900,8 @@ function wxInit(){
   if(WX.inited) return; WX.inited=true;
   const house=$('#wxHouse');
   if(house) house.addEventListener('click',()=>house.classList.toggle('open'));
+  const badge=$('#wxBadge');
+  if(badge) badge.addEventListener('click',()=>{ if(WX.pref==='auto') wxFetchWeather() });
   const sw=$('#wxSwitch');
   if(sw) sw.addEventListener('click',e=>{
     const b=e.target.closest('button[data-wxmode]'); if(!b) return;
@@ -2890,8 +2921,14 @@ function wxEnter(){
   wxInit();
   bgStart();
   seasonInit();
+  gateCleanAutofill();
   if(!WX.run) wxStart();
   if(WX.pref==='auto') wxFetchWeather(); else wxSetMode(WX.pref,{manual:true});
+}
+/* 不让浏览器记住/自动填账号密码 */
+function gateCleanAutofill(){
+  const clear=()=>{ ['#lu','#lp'].forEach(s=>{ const el=$(s); if(!el) return; if(document.activeElement===el) return; if(el.value) el.value='' }) };
+  clear(); setTimeout(clear,350); setTimeout(clear,900);
 }
 
 (async function boot(){
