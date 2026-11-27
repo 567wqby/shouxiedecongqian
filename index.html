@@ -182,21 +182,37 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
 .wx-switch{display:flex;gap:2px;background:rgba(10,16,24,.48);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:3px;backdrop-filter:blur(8px)}
 .wx-switch button{background:transparent;border:none;color:#c9d4de;font-size:12px;padding:4px 10px;border-radius:16px;cursor:pointer}
 .wx-switch button.on{background:rgba(255,255,255,.92);color:#17222c;font-weight:600}
-.gate-card{position:relative;z-index:9;width:362px;background:rgba(255,255,255,.96);border-radius:16px;padding:26px 26px 18px;pointer-events:auto;
-  box-shadow:0 26px 80px rgba(0,0,0,.62),0 0 0 1px rgba(255,255,255,.28);backdrop-filter:blur(3px)}
+/* 登录卡：半透明玻璃，跟背景长在一起 */
+.gate-card{position:relative;z-index:9;width:348px;padding:30px 28px 22px;pointer-events:auto;
+  border-radius:22px;border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(165deg,rgba(16,19,25,.62),rgba(8,11,16,.44) 70%);
+  backdrop-filter:blur(26px) saturate(1.1);-webkit-backdrop-filter:blur(26px) saturate(1.1);
+  box-shadow:0 26px 80px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -40px 70px rgba(0,0,0,.18);
+  color:#eaf1f7}
+.gate-card::after{content:'';position:absolute;left:28px;right:28px;top:0;height:1px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.5),rgba(255,255,255,0));opacity:.55}
 @media (max-width:760px){
   .wx-house{right:4vw;bottom:6vh;width:150px}
   .wx-kids{width:200px;left:2vw}
   .wx-lyric .q{font-size:14px}
-  .gate-card{width:min(92vw,362px)}
+  .gate-card{width:min(90vw,348px);padding:24px 20px 18px}
 }
-.gate-brand{font-size:22px;font-weight:700;letter-spacing:4px;color:#16232e}
-.gate-brand small{display:block;font-size:11px;letter-spacing:2px;color:#7b8b98;font-weight:400;margin-top:4px}
-.gate-tip{font-size:12.5px;color:#5f6b7a;margin-top:14px;line-height:1.7}
-.gate-card input{width:100%;margin-top:10px;padding:9px 11px}
-.gate-err{color:#b91c1c;font-size:12px;min-height:18px;margin-top:8px}
-.gate-card .primary{width:100%;margin-top:4px;padding:10px}
-.gate-foot{font-size:11.5px;color:#8a97a2;margin-top:14px;text-align:center;line-height:1.7}
+.gate-brand{font-size:22px;font-weight:600;letter-spacing:6px;color:#f4f8fb;text-shadow:0 3px 22px rgba(0,0,0,.72)}
+.gate-brand small{display:block;font-size:10.5px;letter-spacing:2.4px;color:rgba(226,236,246,.7);font-weight:400;margin-top:7px}
+.gate-card input{width:100%;margin-top:12px;padding:11px 13px;border-radius:13px;
+  background:rgba(255,255,255,.075)!important;border:1px solid rgba(255,255,255,.2)!important;
+  color:#f2f7fb!important;font-size:14px;letter-spacing:.5px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);backdrop-filter:blur(8px);transition:.2s}
+.gate-card input::placeholder{color:rgba(226,236,246,.52);letter-spacing:1px}
+.gate-card input:focus{background:rgba(255,255,255,.12)!important;border-color:rgba(255,214,140,.62)!important;
+  box-shadow:0 0 0 3px rgba(255,206,120,.13),inset 0 1px 0 rgba(255,255,255,.2)!important}
+.gate-card .hint{color:rgba(226,236,246,.78);font-size:12px}
+.gate-card .hint input[type=checkbox]{accent-color:#e5b26a}
+.gate-err{color:#ffc2b8;font-size:12px;min-height:18px;margin-top:8px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.gate-card .primary{width:100%;margin-top:6px;padding:12px;border-radius:13px;border:none;letter-spacing:7px;font-size:14.5px;
+  background:linear-gradient(120deg,rgba(43,120,150,.94),rgba(22,66,96,.94));color:#f7fbfe;
+  box-shadow:0 14px 32px rgba(6,26,40,.5),inset 0 1px 0 rgba(255,255,255,.25);transition:.22s}
+.gate-card .primary:hover{transform:translateY(-1px);background:linear-gradient(120deg,rgba(52,136,168,.98),rgba(26,78,112,.98))}
 .acct-bar{font-size:11px;color:#8fa6b6;margin-top:10px;padding:0 8px;display:flex;justify-content:space-between;align-items:center;gap:6px}
 .acct-bar button{background:transparent;border:none;color:#9fb6c6;font-size:11px;padding:2px 4px}
 .cloud-chip{display:inline-block;margin-top:8px;font-size:11px;color:#9fb6c6;background:rgba(255,255,255,.06);
@@ -384,14 +400,12 @@ table.tb th{background:#f6f8f5;font-weight:600;color:#33414d}
   <div class="gate-inner">
   <div class="gate-card">
     <div class="gate-brand">手写的从前<small>文献管理与科研助手 · 旧时光里的文献库</small></div>
-    <div class="gate-tip">网页版：文献在浏览器里加密后存到云端，换设备用同一账号登录就能看到同一份文献库。不联网时仍可读本机缓存。</div>
-    <input id="lu" placeholder="账号" autocomplete="username" value="wangquanbaye">
+    <input id="lu" placeholder="账号" autocomplete="username">
     <input id="lp" type="password" placeholder="密码" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     
-    <label class="hint" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="lm" style="width:auto;margin:0"> 本机记住我（30 天内自动登录）</label>
+    <label class="hint" style="display:flex;gap:6px;align-items:center;margin-top:12px"><input type="checkbox" id="lm" style="width:auto;margin:0"> 本机记住我（30 天内自动登录）</label>
     <div class="gate-err" id="lerr"></div>
     <button class="primary" onclick="doLogin()">登　录</button>
-    <div class="gate-foot">默认账号 wangquanbaye / 0000<br>登录后可在「改进对照 / 设置」改密码</div>
   </div>
   </div>
 </div>
@@ -2538,9 +2552,9 @@ const WX_LABEL={sun:'晴天',cloudy:'阴天',rain:'雨天',snow:'雪天'};
 
 /* ===== 登录背景：三位歌手的写真 + 与艺人/天气对应的歌词（每 5 秒轮换） ===== */
 const BG_ARTISTS={
-  jay:{name:'周杰伦',imgs:['bg/jay1.jpg','bg/jay2.jpg','bg/jay3.jpg','bg/jay4.jpg']},
-  yanzi:{name:'孙燕姿',imgs:['bg/yanzi1.jpg','bg/yanzi2.jpg','bg/yanzi3.jpg','bg/yanzi4.jpg']},
-  eason:{name:'陈奕迅',imgs:['bg/eason1.jpg','bg/eason2.jpg']}
+  jay:{name:'周杰伦',imgs:['bg/jayA.jpg','bg/jayB.jpg','bg/jayC.jpg']},
+  yanzi:{name:'孙燕姿',imgs:['bg/yanziA.jpg','bg/yanziC.jpg','bg/yanzi1.jpg']},
+  eason:{name:'陈奕迅',imgs:['bg/eason1.jpg','bg/easonB.jpg','bg/easonC.jpg']}
 };
 /* 背景是哪位歌手，就只显示他自己的歌；歌词再按当天天气挑 */
 const BG_LYRIC={
