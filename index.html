@@ -604,11 +604,15 @@ async function ghApi(path,opt){
   return r;
 }
 async function ghFind(u){
-  const r=await ghApi('/gists?per_page=100');
-  if(!r.ok) throw new Error('读取同步列表失败 '+r.status);
-  const list=await r.json();
-  const g=(list||[]).find(x=>(x.description||'').indexOf('wenshu:'+u)>-1);
-  return g?g.id:null;
+  for(let page=1;page<=3;page++){
+    const r=await ghApi('/gists?per_page=100&page='+page);
+    if(!r.ok) throw new Error('读取同步列表失败 '+r.status);
+    const list=await r.json();
+    const g=(list||[]).find(x=>(x.description||'').indexOf('wenshu:'+u)>-1);
+    if(g) return g.id;
+    if(!list||list.length<100) break;
+  }
+  return null;
 }
 async function ghLoad(u){
   if(!GH.id) GH.id=await ghFind(u);
@@ -626,6 +630,7 @@ async function ghLoad(u){
 async function ghSave(u,pack){
   const name='wenshu-'+u+'.json';
   const body=JSON.stringify(pack);
+  if(!GH.id) GH.id=await ghFind(u);   // 先找已有的，避免同一账号建出两份
   if(GH.id){
     const r=await ghApi('/gists/'+GH.id,{method:'PATCH',body:JSON.stringify({files:{[name]:{content:body}}})});
     if(!r.ok) throw new Error('写入失败 '+r.status);
@@ -699,7 +704,10 @@ async function cloudApply(payload){
 let _noSync=false;
 async function cloudSignIn(u,p){
   let pack=null;
-  try{ pack=await cloudGet(u) }catch(e){ pack=undefined }
+  try{ pack=await cloudGet(u) }catch(e){
+    if(CLOUD.mode==='gist') return {ok:false,msg:'读取云端失败：'+e.message};
+    pack=undefined;
+  }
   const key=await cloudKey(p,u);
   if(pack===undefined){
     if(!localStorage.getItem(dbKey())) return {ok:false,msg:'连不上云端，且本机也没有这个账号的数据'};
